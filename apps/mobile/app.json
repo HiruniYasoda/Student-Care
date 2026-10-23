@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "Student Care Parent",
+    "slug": "student-care-parent",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#0f172a"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "lk.studentcare.parent"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0f172a"
+      },
+      "package": "lk.studentcare.parent"
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}

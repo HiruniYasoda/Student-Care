@@ -1,0 +1,30 @@
+{
+  "name": "student-care",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Student Care — Multi-Tenant School Management Platform with Dedicated Database Isolation",
+  "workspaces": [
+    "packages/*",
+    "services/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev --workspace=@student-care/api",
+    "dev:web": "npm run dev --workspace=@student-care/web",
+    "dev:mobile": "npm run start --workspace=@student-care/mobile",
+    "build:types": "npm run build --workspace=@student-care/shared-types",
+    "build:api": "npm run build --workspace=@student-care/api",
+    "build:web": "npm run build --workspace=@student-care/web",
+    "build": "npm run build:types && npm run build:api && npm run build:web",
+    "type-check": "npm run type-check --workspaces --if-present",
+    "test": "npm run test --workspace=@student-care/api",
+    "lint": "npm run lint --workspaces --if-present",
+    "format:check": "prettier --check .",
+    "format": "prettier --write .",
+    "clean": "node -e \"const fs = require('fs'); ['packages/shared-types/dist', 'services/api/dist', 'apps/web/.next'].forEach(p => fs.existsSync(p) && fs.rmSync(p, { recursive: true }));\""
+  },
+  "devDependencies": {
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2"
+  }
+}

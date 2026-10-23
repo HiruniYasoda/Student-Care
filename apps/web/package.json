@@ -1,0 +1,27 @@
+{
+  "name": "@student-care/web",
+  "version": "1.0.0",
+  "description": "Next.js Web Platform for Student Care (Public Site, Teacher Portal, School Admin & Platform Admin)",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@student-care/shared-types": "*",
+    "next": "^14.2.20",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.20",
+    "typescript": "^5.7.2"
+  }
+}
