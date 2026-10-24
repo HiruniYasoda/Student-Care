@@ -6,17 +6,34 @@
 // 1. School Multi-Tenancy & Central Registry Types
 // ============================================================================
 
-export type SchoolStatus = 'PENDING_PROVISION' | 'ACTIVE' | 'SUSPENDED' | 'ARCHIVED';
+export type SchoolStatus =
+  'PENDING_PROVISION' | 'ACTIVE' | 'SUSPENDED' | 'MAINTENANCE' | 'ARCHIVED';
+
+export interface DatabaseServerSummary {
+  id: string;
+  serverCode: string;
+  host: string;
+  port: number;
+  sslEnabled: boolean;
+  maxTenantLimit: number;
+  isActive: boolean;
+}
 
 export interface SchoolRegistryEntry {
-  id: string; // Unique identifier (e.g. 'sch_colombo_001')
-  code: string; // Human-friendly code (e.g. 'CC-COL')
+  id: string; // Unique identifier (e.g. 'sch_colombo_royal_001')
+  code: string; // Human-friendly code (e.g. 'RC-COL')
   name: string;
+  legalEntityName?: string;
+  logoUrl?: string;
+  contactEmail: string;
+  contactPhone: string;
   timezone: string; // Default: 'Asia/Colombo'
   status: SchoolStatus;
-  databaseName: string; // Dedicated tenant database name (e.g. 'sc_school_colombo_001')
+  serverId?: string;
+  databaseName: string; // Dedicated tenant database name (e.g. 'sc_school_sch_colombo_royal_001')
   databaseHost?: string;
   databasePort?: number;
+  provisionedAt?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -34,12 +51,42 @@ export interface SchoolDatabaseConfig {
 }
 
 // ============================================================================
-// 2. Identity & Access Roles
+// 2. Automated Provisioning Types
+// ============================================================================
+
+export type ProvisioningJobStatus =
+  'QUEUED' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED' | 'ROLLED_BACK';
+
+export type ProvisioningStep =
+  | 'JOB_INITIALIZED'
+  | 'DATABASE_CREATION'
+  | 'SCHEMA_MIGRATION'
+  | 'DEFAULT_DATA_SEEDING'
+  | 'INTEGRITY_VERIFICATION'
+  | 'TENANT_ACTIVATION'
+  | 'FAILED_NEEDS_CLEANUP';
+
+export interface ProvisioningJobSummary {
+  id: string;
+  schoolId: string;
+  targetDatabaseName: string;
+  status: ProvisioningJobStatus;
+  currentStep: ProvisioningStep;
+  retryCount: number;
+  failureReason?: string;
+  startedAt?: string;
+  completedAt?: string;
+  createdAt: string;
+}
+
+// ============================================================================
+// 3. Identity & Access Roles
 // ============================================================================
 
 export type UserRole =
   | 'SUPER_ADMIN' // Platform-wide administrator
   | 'SCHOOL_ADMIN' // Administrative staff within a specific school
+  | 'PRINCIPAL'
   | 'TEACHER' // School educator
   | 'PARENT'; // Parent or guardian
 
@@ -52,7 +99,7 @@ export interface AuthUserSummary {
 }
 
 // ============================================================================
-// 3. API Response Contracts
+// 4. API Response Contracts
 // ============================================================================
 
 export interface ApiErrorDetail {
@@ -79,11 +126,12 @@ export interface HealthCheckResponse {
 }
 
 // ============================================================================
-// 4. Domain Models (Foundational contracts for future phases)
+// 5. Domain Models (Foundational contracts for future phases)
 // ============================================================================
 
-export type AttendanceStatus = 'PRESENT' | 'ABSENT' | 'LATE' | 'EXCUSED';
-export type AttendanceSource = 'MANUAL' | 'BIOMETRIC_FINGERPRINT';
+export type AttendanceStatus = 'PRESENT' | 'ABSENT' | 'LATE' | 'HALF_DAY' | 'EXCUSED';
+export type AttendanceSource =
+  'BIOMETRIC_TERMINAL' | 'TEACHER_MANUAL' | 'ADMIN_CORRECTION' | 'SYSTEM_AUTOMATIC_ABSENCE';
 
 export interface Student {
   id: string;
@@ -91,11 +139,23 @@ export interface Student {
   admissionNumber: string;
   firstName: string;
   lastName: string;
+  fullName: string;
   grade: string;
   classSection: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface Guardian {
+  id: string;
+  firstName: string;
+  lastName: string;
+  relationship: string;
+  phonePrimary: string;
+  phoneSecondary?: string;
+  email?: string;
+  isEmergencyContact: boolean;
 }
 
 export interface AttendanceRecord {
@@ -105,6 +165,18 @@ export interface AttendanceRecord {
   date: string; // ISO date 'YYYY-MM-DD'
   status: AttendanceStatus;
   source: AttendanceSource;
+  checkInTime?: string;
+  checkOutTime?: string;
+  lateMinutes?: number;
   markedAt: string;
-  markedByUserId: string;
+  markedByUserId?: string;
+}
+
+export interface Notice {
+  id: string;
+  title: string;
+  content: string;
+  targetType: 'ALL_SCHOOL' | 'SPECIFIC_GRADES' | 'SPECIFIC_SECTIONS' | 'INDIVIDUAL_STUDENTS';
+  publishedAt: string;
+  isActive: boolean;
 }
